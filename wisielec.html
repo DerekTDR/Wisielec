@@ -1,0 +1,116 @@
+<!-- TYMOTEUSZ RUTKOWSKI ROŚCI SOBIE PRAWA AUTORSKIE ITD. NA LICENCJI GPL CZY COŚ
+P.S. KLAWIATURA NIE MA ZBYT DOBREJ OPRAWY GRAFICZNEJ, ALE DZIAŁA, JESTEM Z SIEBIE DUMNY-->
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wisielec - gra</title>
+</head>
+<body onload="start()">
+    <b>Wisielec - gra</b>
+    <style>
+        b {
+            margin-left: 45%;
+            font-size: xx-large;
+            text-align: center;
+        }
+    </style>
+    <br />
+    <div id="kontener">
+    <img id="obraz" src="img/0.jpg" alt="" style="width: 40%;"><br />
+    <span id="slowo" ></span>
+    </div>
+    <script>
+        // Dodanie wstępnych zmiennych
+        var slowo;
+        var maska = Array();
+        var proby;
+        var maxProby = 11;
+        // Start gry przed załadowaniem
+        function start() {
+            slowo = prompt("Podaj wyraz:"); // Wyświetla komunikat
+            slowo = slowo.toUpperCase(); // Zastępuje na wielkie znaki
+            maska = new Array(slowo.length); //Maskuje odpowiednią długość słowa do wpisanego
+            maska.fill(true); //Uzupełnianie elementów tablicy o wartość 'true'
+            document.getElementById('slowo').innerHTML = schowajSlowo(); // ZAPAMIĘTAĆ BY NAPISAĆ TU KOMENTARZ
+            proby = 0; //Domyślnie zużyto 0 prób
+            document.getElementById('obraz').src = "img/" + proby + ".jpg"; //Wczytuje zdjęcia poprzez szukanie ich nazw po liczbie prób, jest 0, więc będzie to 0.jpg
+        }
+        // Działanie gry
+        function zgadnij(vnt) {
+            let sukces = false; //Domyślnie sukces jest fałszywy, gdyż nie wygraliśmy na początku gry
+            let char = vnt.srcElement.innerHTML;
+            let slowoArray = slowo.split("");
+            for(let i = 0; i < slowoArray.length; i++) {
+                if(slowoArray[i] == char) {
+                    maska[i] = false;
+                    sukces = true;
+                }
+            }
+            document.getElementById('slowo').innerHTML = schowajSlowo();
+            vnt.srcElement.disabled = true; //Blokuje możliwość wciśnięcia klawisza drugi raz
+            if(!sukces) {
+                proby++; // proby = proby + 1
+                document.getElementById('obraz').src = "img/" + proby + ".jpg"; //Wstawia zdjęcia poprzez szukanie ich nazw po liczbie prób
+            }
+            if(przegrana()) {
+                alert("Powiesili cię!"); //Jeśli jest spełniona funkcja przegrana to wyświetla komunikat
+            }
+            if(wygrana()) {
+                alert("Przeżyłeś!"); //Jeśli jest spełniona funkcja wygrana to wyświetla komunikat
+            }
+        }
+        function przegrana() {
+            if(proby >= maxProby) { //Jeśli zmienna prób przekroczy maksymalną wartość to przegrywa...
+                return true;
+            }
+            else {
+                return false; //...jeśli nie to gra dalej
+            }
+        }
+        function wygrana() {
+            for (let i = 0; i < maska.length; i++) { //Jeśli program nie zastał żadnej schowanej litery to wygrywa
+                if(maska[i] == true)
+                return false;
+            }
+            return true;
+        }
+
+        function schowajSlowo() {
+            let slowoArray = slowo.split("");
+            let schowaneSlowo = Array();
+            for(let i = 0; i < slowoArray.length; i++) {
+                if(maska[i])
+                    schowaneSlowo.push("_   "); //Zastępuje znak litery tym znakiem
+                else
+                    schowaneSlowo.push(slowoArray[i]); //Chyba odkrywa literę
+            }
+
+            let schowaneSlowoS = schowaneSlowo.join("");
+            return schowaneSlowoS;
+        }
+    </script>
+    <br /> <!-- ENTER oddzielający klawaiturę, dzięki czemu jest na dole-->
+    <script>
+        // To jest klawiatura
+        function main(cA, cZ) {
+            var abc = [], e = cA.charCodeAt(0), i = cZ.charCodeAt(0);
+            for (; e <= i; ++e) {
+                abc.push(String.fromCharCode(e));
+            }
+            return abc;
+        }
+
+        let x = main('A', 'Z');        
+        for (let a = 0; a < x.length; a++){
+            let btn = document.createElement('button'); //Tworzy element przycisku
+            btn.innerHTML = x[a];
+            btn.addEventListener('click', zgadnij) //Obserwator zdarzeń dla typu w elemencie
+            document.body.appendChild(btn)
+        }
+    </script>
+</body>
+</html>
